@@ -258,6 +258,7 @@
         <div class="field" style="max-width:220px;">
           <label>Daily Quota (mL)</label>
           <input id="dailyGoal" type="text" inputmode="numeric" pattern="[0-9]*" value="2000">
+          <div style="font-size:9px; color:var(--parchment-dim); margin-top:4px;">Range 1,500–3,500 mL — higher ranks require a higher quota</div>
         </div>
       </div>
       <div class="gauge-wrap">
@@ -445,36 +446,36 @@ function badgeSVG(insignia, opts){
 
 /* ============ RANK LADDER ============ */
 const RANKS = [
-  {id:'CIV', code:'—', title:'Civilian', phase:1, insignia:{type:'patch'}},
-  {id:'DEP', code:'DEP', title:'Future Soldier (DEP)', phase:1, hp:3000, insignia:{type:'patch'}},
+  {id:'CIV', code:'—', title:'Civilian', phase:1, dailyMin:1500, insignia:{type:'patch'}},
+  {id:'DEP', code:'DEP', title:'Future Soldier (DEP)', phase:1, hp:3000, dailyMin:1500, insignia:{type:'patch'}},
   {id:'BCT', gate:true, title:'Basic Combat Training', phase:1},
-  {id:'PVT', code:'E-1', title:'Private', phase:1, insignia:{type:'blank'}, requiresCourse:'BCT'},
-  {id:'PV2', code:'E-2', title:'Private 2nd Class', phase:1, hp:10000, insignia:{type:'chevron', chevrons:1}},
-  {id:'PFC', code:'E-3', title:'Private First Class', phase:1, hp:20000, streak:7, insignia:{type:'chevron', chevrons:1, rockers:1}},
-  {id:'SPC', code:'E-4', title:'Specialist', phase:1, hp:35000, streak:10, insignia:{type:'shield'}, branch:true},
+  {id:'PVT', code:'E-1', title:'Private', phase:1, dailyMin:1500, insignia:{type:'blank'}, requiresCourse:'BCT'},
+  {id:'PV2', code:'E-2', title:'Private 2nd Class', phase:1, hp:10000, dailyMin:1600, insignia:{type:'chevron', chevrons:1}},
+  {id:'PFC', code:'E-3', title:'Private First Class', phase:1, hp:20000, streak:7, dailyMin:1700, insignia:{type:'chevron', chevrons:1, rockers:1}},
+  {id:'SPC', code:'E-4', title:'Specialist', phase:1, hp:35000, streak:10, dailyMin:1800, insignia:{type:'shield'}, branch:true},
 
   {id:'BLC', gate:true, title:'Basic Leader Course', phase:2, track:'NCO'},
-  {id:'CPL', code:'E-4', title:'Corporal', phase:2, track:'NCO', requiresCourse:'BLC', insignia:{type:'chevron', chevrons:2}},
-  {id:'SGT', code:'E-5', title:'Sergeant', phase:2, track:'NCO', hp:55000, streak:14, insignia:{type:'chevron', chevrons:3}},
-  {id:'SSG', code:'E-6', title:'Staff Sergeant', phase:2, track:'NCO', hp:80000, streak:21, insignia:{type:'chevron', chevrons:3, rockers:1}},
+  {id:'CPL', code:'E-4', title:'Corporal', phase:2, track:'NCO', requiresCourse:'BLC', dailyMin:1900, insignia:{type:'chevron', chevrons:2}},
+  {id:'SGT', code:'E-5', title:'Sergeant', phase:2, track:'NCO', hp:55000, streak:14, dailyMin:2100, insignia:{type:'chevron', chevrons:3}},
+  {id:'SSG', code:'E-6', title:'Staff Sergeant', phase:2, track:'NCO', hp:80000, streak:21, dailyMin:2300, insignia:{type:'chevron', chevrons:3, rockers:1}},
   {id:'SLC', gate:true, title:'Senior Leader Course', phase:2, track:'NCO'},
-  {id:'SFC', code:'E-7', title:'Sergeant First Class', phase:2, track:'NCO', requiresCourse:'SLC', insignia:{type:'chevron', chevrons:3, rockers:2}},
-  {id:'MSG', code:'E-8', title:'Master Sergeant', phase:2, track:'NCO', hp:180000, streak:30, insignia:{type:'chevron', chevrons:3, rockers:3}},
-  {id:'SGM', code:'E-9', title:'Sergeant Major', phase:2, track:'NCO', hp:250000, streak:45, insignia:{type:'chevron', chevrons:3, rockers:3, star:true}},
+  {id:'SFC', code:'E-7', title:'Sergeant First Class', phase:2, track:'NCO', requiresCourse:'SLC', dailyMin:2500, insignia:{type:'chevron', chevrons:3, rockers:2}},
+  {id:'MSG', code:'E-8', title:'Master Sergeant', phase:2, track:'NCO', hp:180000, streak:30, dailyMin:2800, insignia:{type:'chevron', chevrons:3, rockers:3}},
+  {id:'SGM', code:'E-9', title:'Sergeant Major', phase:2, track:'NCO', hp:250000, streak:45, dailyMin:3000, insignia:{type:'chevron', chevrons:3, rockers:3, star:true}},
 
   {id:'OCS', gate:true, title:'Officer Candidate School', phase:2, track:'OFFICER'},
-  {id:'2LT', code:'O-1', title:'2nd Lieutenant', phase:2, track:'OFFICER', requiresCourse:'OCS', insignia:{type:'bar', color:'gold', count:1}},
-  {id:'1LT', code:'O-2', title:'1st Lieutenant', phase:2, track:'OFFICER', hp:330000, streak:50, insignia:{type:'bar', color:'silver', count:1}},
-  {id:'CPT', code:'O-3', title:'Captain', phase:2, track:'OFFICER', hp:420000, streak:60, insignia:{type:'bar', color:'silver', count:2}},
+  {id:'2LT', code:'O-1', title:'2nd Lieutenant', phase:2, track:'OFFICER', requiresCourse:'OCS', dailyMin:2000, insignia:{type:'bar', color:'gold', count:1}},
+  {id:'1LT', code:'O-2', title:'1st Lieutenant', phase:2, track:'OFFICER', hp:330000, streak:50, dailyMin:2200, insignia:{type:'bar', color:'silver', count:1}},
+  {id:'CPT', code:'O-3', title:'Captain', phase:2, track:'OFFICER', hp:420000, streak:60, dailyMin:2400, insignia:{type:'bar', color:'silver', count:2}},
 
   {id:'USAWC', gate:true, title:'U.S. Army War College', phase:3, track:'OFFICER'},
-  {id:'MAJ', code:'O-4', title:'Major', phase:3, track:'OFFICER', requiresCourse:'USAWC', insignia:{type:'leaf', color:'gold'}},
-  {id:'LTC', code:'O-5', title:'Lieutenant Colonel', phase:3, track:'OFFICER', hp:650000, streak:100, insignia:{type:'leaf', color:'silver'}},
-  {id:'COL', code:'O-6', title:'Colonel', phase:3, track:'OFFICER', hp:850000, streak:120, insignia:{type:'eagle'}},
-  {id:'BG', code:'O-7', title:'Brigadier General', phase:3, track:'OFFICER', hp:1000000, streak:135, insignia:{type:'stars', count:1}},
-  {id:'MG', code:'O-8', title:'Major General', phase:3, track:'OFFICER', hp:1500000, streak:150, insignia:{type:'stars', count:2}},
-  {id:'LTG', code:'O-9', title:'Lieutenant General', phase:3, track:'OFFICER', hp:2000000, streak:165, insignia:{type:'stars', count:3}},
-  {id:'GEN', code:'O-10', title:'General', phase:3, track:'OFFICER', hp:3000000, streak:180, insignia:{type:'stars', count:4}},
+  {id:'MAJ', code:'O-4', title:'Major', phase:3, track:'OFFICER', requiresCourse:'USAWC', dailyMin:2600, insignia:{type:'leaf', color:'gold'}},
+  {id:'LTC', code:'O-5', title:'Lieutenant Colonel', phase:3, track:'OFFICER', hp:650000, streak:100, dailyMin:2900, insignia:{type:'leaf', color:'silver'}},
+  {id:'COL', code:'O-6', title:'Colonel', phase:3, track:'OFFICER', hp:850000, streak:120, dailyMin:3200, insignia:{type:'eagle'}},
+  {id:'BG', code:'O-7', title:'Brigadier General', phase:3, track:'OFFICER', hp:1000000, streak:135, dailyMin:3300, insignia:{type:'stars', count:1}},
+  {id:'MG', code:'O-8', title:'Major General', phase:3, track:'OFFICER', hp:1500000, streak:150, dailyMin:3400, insignia:{type:'stars', count:2}},
+  {id:'LTG', code:'O-9', title:'Lieutenant General', phase:3, track:'OFFICER', hp:2000000, streak:165, dailyMin:3450, insignia:{type:'stars', count:3}},
+  {id:'GEN', code:'O-10', title:'General', phase:3, track:'OFFICER', hp:3000000, streak:180, dailyMin:3500, insignia:{type:'stars', count:4}},
 ];
 
 const COURSES = {
@@ -540,6 +541,7 @@ async function pullFromSupabase(){
 }
 
 let state = loadState();
+state.dailyGoal = Math.min(3500, Math.max(1500, Number(state.dailyGoal)||2000));
 function defaultState(){
   return {
     dailyGoal:2000, totalHp:0, logs:[], bestStreak:0,
@@ -683,7 +685,8 @@ function currentRankIndexForPath(path, recs, streaks){
     const hpOk = !r.hp || state.totalHp >= r.hp;
     const streakOk = !r.streak || streaks.best >= r.streak || streaks.current >= r.streak;
     const courseOk = !r.requiresCourse || state.coursesCleared[r.requiresCourse];
-    if(hpOk && streakOk && courseOk) idx = i;
+    const dailyMinOk = !r.dailyMin || state.dailyGoal >= r.dailyMin;
+    if(hpOk && streakOk && courseOk && dailyMinOk) idx = i;
     else break;
   }
   return idx;
@@ -793,6 +796,7 @@ function rankRowHTML(r, i, idx, path, recs, opts){
   const reqParts = [];
   if(r.hp) reqParts.push(r.hp.toLocaleString()+' HP');
   if(r.streak) reqParts.push(r.streak+'-day streak');
+  if(r.dailyMin) reqParts.push('≥'+r.dailyMin.toLocaleString()+' mL/day quota');
   if(r.requiresCourse) reqParts.push('after '+r.requiresCourse);
   return `<div class="rank-row ${status}${altClass}">
     <div class="mini-badge">${badgeSVG(r.insignia, {locked: status==='locked', mustang: state.mustang && r.track==='OFFICER' && status!=='locked'})}</div>
@@ -851,7 +855,7 @@ document.getElementById('dailyGoal').addEventListener('input', e=>{
   e.target.value = e.target.value.replace(/[^0-9]/g, '');
 });
 document.getElementById('dailyGoal').addEventListener('change', e=>{
-  state.dailyGoal = Math.max(500, Number(e.target.value)||2000);
+  state.dailyGoal = Math.min(3500, Math.max(1500, Number(e.target.value)||2000));
   render();
 });
 document.getElementById('logCustomBtn').addEventListener('click', ()=>{
