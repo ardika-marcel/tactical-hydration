@@ -241,7 +241,7 @@
   <div class="masthead">
     <div>
       <div class="title stencil">Tactical Hydration</div>
-      <div class="sub">Army Rank Progression · Water Intake Service Record</div>
+      <div class="sub">U.S. Army Rank Progression · Water Intake Service Record</div>
     </div>
     <div class="stamp-id">SERVICE No. <b id="svcNo">—</b><br>STATUS: <b id="svcStatus">ACTIVE DUTY</b><br>CLOUD: <b id="cloudStatus">checking…</b></div>
   </div>
@@ -255,11 +255,7 @@
     </div>
     <div class="record-main">
       <div class="field-row">
-        <div class="field">
-          <label>Callsign</label>
-          <input id="callsign" type="text" placeholder="Enter callsign" maxlength="20">
-        </div>
-        <div class="field">
+        <div class="field" style="max-width:220px;">
           <label>Daily Quota (mL)</label>
           <input id="dailyGoal" type="number" min="500" step="50" value="2000">
         </div>
@@ -329,7 +325,7 @@
   <div class="roster" id="roster"></div>
 </div>
 
-<footer>TACTICAL HYDRATION</footer>
+<footer>TACTICAL HYDRATION — Service Record persists locally on this device. This is a fictional rank simulation for a hydration habit tracker, not affiliated with the U.S. Army.</footer>
 </div>
 
 <div class="page" id="pageAllRanks">
@@ -546,7 +542,7 @@ async function pullFromSupabase(){
 let state = loadState();
 function defaultState(){
   return {
-    callsign:'', dailyGoal:2000, totalHp:0, logs:[], bestStreak:0,
+    dailyGoal:2000, totalHp:0, logs:[], bestStreak:0,
     track:null, mustang:false, coursesCleared:{}, svcNo: String(Math.floor(100000+Math.random()*899999))
   };
 }
@@ -701,7 +697,6 @@ function pathForTrack(track){
 
 /* ============ RENDER ============ */
 function render(){
-  document.getElementById('callsign').value = state.callsign;
   document.getElementById('dailyGoal').value = state.dailyGoal;
   document.getElementById('svcNo').textContent = state.svcNo;
 
@@ -864,7 +859,6 @@ function addLog(amt, type){
   state.totalHp += amt;
   render();
 }
-document.getElementById('callsign').addEventListener('input', e=>{ state.callsign = e.target.value; saveState(); });
 document.getElementById('dailyGoal').addEventListener('change', e=>{ state.dailyGoal = Math.max(500, Number(e.target.value)||2000); render(); });
 document.getElementById('pickNco').addEventListener('click', ()=>{ if(!state.track){ state.track='NCO'; render(); } });
 document.getElementById('pickOcs').addEventListener('click', ()=>{
