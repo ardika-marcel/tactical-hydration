@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TACTICAL HYDRATION — Service Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12140D;
+    --panel:#1B1E14;
+    --panel-2:#20231A;
+    --line:#3A3F2C;
+    --parchment:#E9E4D0;
+    --parchment-dim:#A6A28D;
+    --brass:#C9A227;
+    --brass-dim:#8A7220;
+    --olive:#6B7A4F;
+    --olive-dim:#4B5320;
+    --steel:#5A7285;
+    --steel-dim:#39505F;
+    --red:#8B3A3A;
+    --red-bright:#B84C3E;
+    --radius:2px;
+    --shadow:0 8px 24px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top, #1a1d12 0%, var(--bg) 55%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0px, rgba(255,255,255,.012) 1px, transparent 1px, transparent 3px);
+    color:var(--parchment);
+    font-family:'Space Mono', monospace;
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  .stencil{font-family:'Big Shoulders Stencil', sans-serif; font-weight:800; letter-spacing:.04em; text-transform:uppercase;}
+  ::selection{background:var(--brass); color:#12140D;}
+  a{color:var(--brass);}
+
+  /* ===== HEADER / SERVICE RECORD HERO ===== */
+  .hero{
+    max-width:1040px; margin:0 auto; padding:28px 20px 10px;
+  }
+  .masthead{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:2px solid var(--line); padding-bottom:10px; margin-bottom:18px;
+  }
+  .masthead .title{font-size:clamp(28px,5vw,44px); line-height:.95; color:var(--parchment);}
+  .masthead .sub{color:var(--parchment-dim); font-size:11px; letter-spacing:.15em; text-transform:uppercase;}
+  .stamp-id{font-size:11px; color:var(--parchment-dim); text-align:right; line-height:1.6;}
+  .stamp-id b{color:var(--brass);}
+
+  .record-panel{
+    background:linear-gradient(180deg, var(--panel-2), var(--panel));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px;
+    display:grid;
+    grid-template-columns:150px 1fr;
+    gap:24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .record-panel::before{
+    content:''; position:absolute; inset:0;
+    background:repeating-linear-gradient(135deg, transparent 0 22px, rgba(201,162,39,.02) 22px 23px);
+    pointer-events:none;
+  }
+  .badge-slot{
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    border-right:1px dashed var(--line); padding-right:20px;
+  }
+  .badge-slot svg{width:110px; height:130px; overflow:visible;}
+  .rank-code{font-family:'Big Shoulders Stencil'; font-weight:900; font-size:26px; color:var(--brass); letter-spacing:.06em;}
+  .rank-title{font-size:11px; text-align:center; color:var(--parchment-dim); text-transform:uppercase; letter-spacing:.08em;}
+  .mustang-tag{font-size:9px; color:var(--red-bright); border:1px solid var(--red-bright); padding:2px 6px; border-radius:2px; letter-spacing:.1em;}
+
+  .record-main{display:flex; flex-direction:column; gap:14px;}
+  .field-row{display:flex; gap:18px; flex-wrap:wrap;}
+  .field{flex:1; min-width:140px;}
+  .field label{display:block; font-size:9px; color:var(--parchment-dim); letter-spacing:.14em; text-transform:uppercase; margin-bottom:4px;}
+  .field input{
+    width:100%; background:#0F110B; border:1px solid var(--line); color:var(--parchment);
+    font-family:'Space Mono'; padding:7px 8px; border-radius:var(--radius); font-size:13px;
+  }
+  .field input:focus{outline:1px solid var(--brass); border-color:var(--brass);}
+
+  .gauge-wrap{display:flex; align-items:center; gap:14px;}
+  .gauge{flex:1; height:20px; background:#0F110B; border:1px solid var(--line); border-radius:20px; position:relative; overflow:hidden;}
+  .gauge-fill{height:100%; background:linear-gradient(90deg, var(--olive-dim), var(--olive)); transition:width .5s ease;}
+  .gauge-label{font-size:11px; color:var(--parchment-dim); white-space:nowrap;}
+
+  .stat-strip{display:flex; gap:16px; flex-wrap:wrap; margin-top:2px;}
+  .stat{background:#0F110B; border:1px solid var(--line); border-radius:var(--radius); padding:8px 12px; min-width:100px;}
+  .stat .num{font-size:20px; color:var(--brass); font-weight:700;}
+  .stat .lab{font-size:9px; color:var(--parchment-dim); text-transform:uppercase; letter-spacing:.1em;}
+
+  /* ===== LOG PANEL ===== */
+  .section{max-width:1040px; margin:26px auto 0; padding:0 20px;}
+  .section-head{display:flex; align-items:baseline; gap:10px; margin-bottom:12px;}
+  .section-head h2{font-family:'Big Shoulders Stencil'; font-weight:800; font-size:22px; margin:0; letter-spacing:.05em;}
+  .section-head .rule{flex:1; height:1px; background:var(--line);}
+
+  .log-panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow);}
+  .canteen-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+  .canteen-btn{
+    background:#0F110B; border:1px solid var(--olive-dim); color:var(--parchment);
+    font-family:'Space Mono'; font-weight:700; padding:12px 16px; border-radius:var(--radius);
+    cursor:pointer; transition:.15s; font-size:13px; flex:1; min-width:90px;
+  }
+  .canteen-btn:hover{background:var(--olive-dim); border-color:var(--olive);}
+  .canteen-btn:active{transform:scale(.97);}
+  .log-controls{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end;}
+  .log-controls .field{max-width:140px;}
+  .toggle-group{display:flex; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;}
+  .toggle-group button{background:#0F110B; color:var(--parchment-dim); border:none; padding:8px 14px; font-family:'Space Mono'; font-size:12px; cursor:pointer;}
+  .toggle-group button.active{background:var(--olive-dim); color:var(--parchment);}
+  .btn-primary{
+    background:var(--brass-dim); color:#12140D; border:1px solid var(--brass); font-weight:700;
+    padding:10px 20px; border-radius:var(--radius); cursor:pointer; font-family:'Space Mono'; font-size:13px;
+    letter-spacing:.05em; text-transform:uppercase;
+  }
+  .btn-primary:hover{background:var(--brass);}
+  .btn-ghost{background:transparent; border:1px solid var(--line); color:var(--parchment-dim); padding:10px 16px; border-radius:var(--radius); cursor:pointer; font-family:'Space Mono'; font-size:12px;}
+  .btn-ghost:hover{border-color:var(--parchment-dim); color:var(--parchment);}
+
+  .today-log{margin-top:14px; font-size:12px; color:var(--parchment-dim);}
+  .today-log .entry{display:flex; justify-content:space-between; border-bottom:1px dotted var(--line); padding:4px 0;}
+
+  /* ===== BRANCH POINT ===== */
+  .branch-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media(max-width:640px){.branch-grid{grid-template-columns:1fr;}}
+  .branch-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:18px; cursor:pointer;
+    transition:.15s; position:relative;
+  }
+  .branch-card:hover{border-color:var(--brass);}
+  .branch-card.selected{border-color:var(--brass); box-shadow:0 0 0 1px var(--brass) inset;}
+  .branch-card h3{font-family:'Big Shoulders Stencil'; margin:0 0 6px; font-size:18px; letter-spacing:.05em;}
+  .branch-card p{font-size:12px; color:var(--parchment-dim); line-height:1.5; margin:0;}
+  .branch-card.nco h3{color:var(--olive);}
+  .branch-card.officer h3{color:var(--steel);}
+
+  /* ===== DUTY ROSTER (rank ladder) ===== */
+  .roster{display:flex; flex-direction:column; gap:8px;}
+  .rank-row{
+    display:grid; grid-template-columns:64px 1fr auto; gap:14px; align-items:center;
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:10px 14px;
+    position:relative;
+  }
+  .rank-row.locked{opacity:.4; filter:grayscale(.6);}
+  .rank-row.current{border-color:var(--brass); box-shadow:0 0 0 1px var(--brass) inset, 0 0 18px rgba(201,162,39,.15);}
+  .rank-row.achieved{border-color:var(--olive-dim);}
+  .rank-row .mini-badge svg{width:48px; height:56px;}
+  .rank-row .rr-title{font-family:'Big Shoulders Stencil'; font-size:16px; letter-spacing:.03em;}
+  .rank-row .rr-code{font-size:10px; color:var(--parchment-dim); letter-spacing:.1em;}
+  .rank-row .rr-req{font-size:10px; color:var(--parchment-dim); margin-top:2px;}
+  .rr-status{font-size:9px; letter-spacing:.12em; text-transform:uppercase; padding:3px 8px; border-radius:2px; white-space:nowrap;}
+  .rr-status.current{background:var(--brass); color:#12140D;}
+  .rr-status.achieved{background:transparent; border:1px solid var(--olive); color:var(--olive);}
+  .rr-status.locked{background:transparent; border:1px solid var(--line); color:var(--parchment-dim);}
+
+  /* ===== COURSE GATE CARD ===== */
+  .gate-card{
+    background:linear-gradient(180deg, #201313, #1a1210); border:1px solid var(--red); border-radius:var(--radius);
+    padding:16px; position:relative; margin:4px 0;
+  }
+  .gate-card.cleared{border-color:var(--olive); background:linear-gradient(180deg, #16200f, #141a10);}
+  .gate-stamp{
+    position:absolute; top:10px; right:14px; border:2px solid var(--red-bright); color:var(--red-bright);
+    font-family:'Big Shoulders Stencil'; font-weight:900; font-size:13px; padding:2px 8px; transform:rotate(-6deg);
+    letter-spacing:.1em; border-radius:3px;
+  }
+  .gate-card.cleared .gate-stamp{border-color:var(--olive); color:var(--olive); content:'CLEARED';}
+  .gate-title{font-family:'Big Shoulders Stencil'; font-size:19px; letter-spacing:.04em; color:var(--parchment); margin-bottom:4px;}
+  .gate-desc{font-size:11px; color:var(--parchment-dim); margin-bottom:10px;}
+  .req-list{display:flex; flex-direction:column; gap:8px;}
+  .req{font-size:11px;}
+  .req .req-label{display:flex; justify-content:space-between; margin-bottom:3px; color:var(--parchment-dim);}
+  .req .req-bar{height:6px; background:#0F110B; border-radius:4px; overflow:hidden; border:1px solid var(--line);}
+  .req .req-fill{height:100%; background:var(--red-bright);}
+  .gate-card.cleared .req-fill{background:var(--olive);}
+  .gate-actions{margin-top:12px; display:flex; gap:8px;}
+
+  footer{max-width:1040px; margin:40px auto 0; padding:14px 20px; border-top:1px solid var(--line); font-size:10px; color:var(--parchment-dim); text-align:center;}
+
+  @media(max-width:640px){
+    .record-panel{grid-template-columns:1fr;}
+    .badge-slot{border-right:none; border-bottom:1px dashed var(--line); padding-right:0; padding-bottom:14px; flex-direction:row; justify-content:flex-start;}
+  }
+
+  @keyframes stampIn{0%{transform:scale(1.6) rotate(-10deg); opacity:0;} 60%{transform:scale(.95) rotate(-4deg); opacity:1;} 100%{transform:scale(1) rotate(-6deg);}}
+  .promo-flash{animation:stampIn .5s ease;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+
+  /* ===== NAV ===== */
+  .topnav{
+    max-width:1040px; margin:0 auto; padding:16px 20px 0; display:flex; gap:8px;
+  }
+  .topnav button{
+    background:transparent; border:1px solid var(--line); color:var(--parchment-dim);
+    font-family:'Big Shoulders Stencil'; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    font-size:13px; padding:8px 18px; border-radius:var(--radius); cursor:pointer;
+  }
+  .topnav button.active{background:var(--panel); color:var(--brass); border-color:var(--brass);}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  /* ===== ALL RANKS PAGE ===== */
+  .career-shared{margin-bottom:8px;}
+  .career-cols{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:10px;}
+  @media(max-width:760px){.career-cols{grid-template-columns:1fr;}}
+  .career-col-head{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .career-col-head h3{font-family:'Big Shoulders Stencil'; font-size:18px; margin:0; letter-spacing:.04em;}
+  .career-col.nco .career-col-head h3{color:var(--olive);}
+  .career-col.officer .career-col-head h3{color:var(--steel);}
+  .track-pill{font-size:9px; letter-spacing:.1em; text-transform:uppercase; padding:2px 8px; border-radius:10px; border:1px solid var(--line); color:var(--parchment-dim);}
+  .track-pill.on{border-color:var(--brass); color:var(--brass);}
+  .rank-row.alt{opacity:.55;}
+  .rank-row.alt .rr-status{border:1px solid var(--line); color:var(--parchment-dim); background:transparent;}
+  .rank-row small.gate-flag{color:var(--red-bright); font-size:9px; letter-spacing:.1em; text-transform:uppercase;}
+  .career-col .rank-row{padding:8px 10px; grid-template-columns:44px 1fr auto;}
+  .career-col .mini-badge svg{width:36px; height:42px;}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <button id="navRecord" class="active">Service Record</button>
+  <button id="navAllRanks">All Tracks &amp; Ranks</button>
+</div>
+
+<div class="page active" id="pageRecord">
+<div class="hero">
+  <div class="masthead">
+    <div>
+      <div class="title stencil">Tactical Hydration</div>
+      <div class="sub">Army Rank Progression · Water Intake Service Record</div>
+    </div>
+    <div class="stamp-id">SERVICE No. <b id="svcNo">—</b><br>STATUS: <b id="svcStatus">ACTIVE DUTY</b><br>CLOUD: <b id="cloudStatus">checking…</b></div>
+  </div>
+
+  <div class="record-panel">
+    <div class="badge-slot">
+      <div id="badgeSvg"></div>
+      <div class="rank-code" id="rankCode">—</div>
+      <div class="rank-title" id="rankTitle">Civilian</div>
+      <div class="mustang-tag" id="mustangTag" style="display:none;">★ MUSTANG</div>
+    </div>
+    <div class="record-main">
+      <div class="field-row">
+        <div class="field">
+          <label>Callsign</label>
+          <input id="callsign" type="text" placeholder="Enter callsign" maxlength="20">
+        </div>
+        <div class="field">
+          <label>Daily Quota (mL)</label>
+          <input id="dailyGoal" type="number" min="500" step="50" value="2000">
+        </div>
+      </div>
+      <div class="gauge-wrap">
+        <div class="gauge"><div class="gauge-fill" id="todayFill" style="width:0%"></div></div>
+        <div class="gauge-label" id="todayLabel">0 / 2000 mL today</div>
+      </div>
+      <div class="stat-strip">
+        <div class="stat"><div class="num" id="totalHp">0</div><div class="lab">Total HP</div></div>
+        <div class="stat"><div class="num" id="curStreak">0</div><div class="lab">Current Streak</div></div>
+        <div class="stat"><div class="num" id="bestStreak">0</div><div class="lab">Best Streak</div></div>
+        <div class="stat"><div class="num" id="daysServed">0</div><div class="lab">Days Served</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><h2 class="stencil">Log Water</h2><div class="rule"></div></div>
+  <div class="log-panel">
+    <div class="canteen-row">
+      <button class="canteen-btn" data-amt="250">+250 mL<br><small style="color:var(--parchment-dim); font-weight:400;">canteen cup</small></button>
+      <button class="canteen-btn" data-amt="500">+500 mL<br><small style="color:var(--parchment-dim); font-weight:400;">half canteen</small></button>
+      <button class="canteen-btn" data-amt="1000">+1000 mL<br><small style="color:var(--parchment-dim); font-weight:400;">full canteen</small></button>
+    </div>
+    <div class="log-controls">
+      <div class="field">
+        <label>Custom (mL)</label>
+        <input id="customAmt" type="number" min="1" placeholder="e.g. 350">
+      </div>
+      <div class="field">
+        <label>Drink Type</label>
+        <div class="toggle-group">
+          <button id="typeWater" class="active" data-type="water">Water</button>
+          <button id="typeOther" data-type="other">Other</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="logCustomBtn">Log It</button>
+      <button class="btn-ghost" id="undoBtn">Undo Last</button>
+    </div>
+    <div class="today-log" id="todayLog"></div>
+  </div>
+</div>
+
+<div class="section" id="branchSection" style="display:none;">
+  <div class="section-head"><h2 class="stencil">Assignment Orders</h2><div class="rule"></div></div>
+  <div class="branch-grid">
+    <div class="branch-card nco" id="pickNco">
+      <h3>NCO Leadership Track</h3>
+      <p>Climb the enlisted chain of command through Basic Leader Course and Senior Leader Course, from Corporal to Sergeant Major.</p>
+    </div>
+    <div class="branch-card officer" id="pickOcs">
+      <h3>Officer Candidate School</h3>
+      <p>Commission as an officer via OCS. NCOs who commission after time in the ranks earn Mustang status.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="courseSection" style="display:none;">
+  <div class="section-head"><h2 class="stencil">Active Orders</h2><div class="rule"></div></div>
+  <div id="courseArea"></div>
+</div>
+
+<div class="section">
+  <div class="section-head"><h2 class="stencil">Duty Roster</h2><div class="rule"></div></div>
+  <div class="roster" id="roster"></div>
+</div>
+
+<footer>TACTICAL HYDRATION</footer>
+</div>
+
+<div class="page" id="pageAllRanks">
+<div class="hero">
+  <div class="masthead">
+    <div>
+      <div class="title stencil">Career Map</div>
+      <div class="sub">Every rank, both tracks, side by side</div>
+    </div>
+    <div class="stamp-id">TRACK STATUS<br><b id="trackStatusLabel">Not yet chosen</b></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><h2 class="stencil">Phase 1 — Enlisted Entry</h2><div class="rule"></div></div>
+  <div class="roster career-shared" id="careerPhase1"></div>
+</div>
+
+<div class="section">
+  <div class="section-head"><h2 class="stencil">Phase 2 &amp; 3 — Choose Your Path</h2><div class="rule"></div></div>
+  <div class="career-cols">
+    <div class="career-col nco">
+      <div class="career-col-head"><h3>NCO Leadership Track</h3><span class="track-pill" id="ncoPill">Alternate</span></div>
+      <div class="roster" id="careerNco"></div>
+    </div>
+    <div class="career-col officer">
+      <div class="career-col-head"><h3>Officer Commissioning Track</h3><span class="track-pill" id="officerPill">Alternate</span></div>
+      <div class="roster" id="careerOfficer"></div>
+    </div>
+  </div>
+</div>
+
+<footer>Ranks outside your chosen track are shown as reference only and don't accrue progress until you switch tracks from the Assignment Orders panel.</footer>
+</div>
+
+<script>
+/* ============ DATA MODEL ============ */
+const KEY = 'tacticalHydrationState_v1';
+
+function starPoints(cx, cy, r, ir){
+  let pts=[];
+  for(let i=0;i<10;i++){
+    const ang = -Math.PI/2 + i*Math.PI/5;
+    const rad = i%2===0 ? r : ir;
+    pts.push(`${cx+rad*Math.cos(ang)},${cy+rad*Math.sin(ang)}`);
+  }
+  return pts.join(' ');
+}
+
+/* SVG insignia builder */
+function badgeSVG(insignia, opts){
+  opts = opts||{};
+  const mustang = opts.mustang;
+  const locked = opts.locked;
+  const gold = '#C9A227', silver = '#C7CBD1', olive='#6B7A4F';
+  let inner = '';
+  const t = insignia.type;
+  if(t==='patch'){
+    inner = `<circle cx="55" cy="65" r="34" fill="none" stroke="${olive}" stroke-width="3" stroke-dasharray="4 3"/>
+      <text x="55" y="70" text-anchor="middle" font-family="Space Mono" font-size="10" fill="${olive}">REC</text>`;
+  } else if(t==='blank'){
+    inner = `<rect x="25" y="40" width="60" height="50" fill="none" stroke="${olive}" stroke-width="2"/>`;
+  } else if(t==='shield'){
+    inner = `<path d="M55 24 L86 36 V64 C86 86 70 100 55 108 C40 100 24 86 24 64 V36 Z" fill="none" stroke="${gold}" stroke-width="3"/>
+      <text x="55" y="72" text-anchor="middle" font-family="Big Shoulders Stencil" font-weight="900" font-size="26" fill="${gold}">S</text>`;
+  } else if(t==='chevron'){
+    const n = insignia.chevrons||1, rockers = insignia.rockers||0, star = insignia.star;
+    let y0 = 100;
+    for(let i=0;i<n;i++){
+      const y = y0 - i*14;
+      inner += `<path d="M20 ${y} L55 ${y-22} L90 ${y} L90 ${y-12} L55 ${y-34} L20 ${y-12} Z" fill="${gold}" stroke="#12140D" stroke-width="1"/>`;
+    }
+    let ry = y0 - n*14 + 6;
+    for(let i=0;i<rockers;i++){
+      const y = ry - i*13;
+      inner += `<path d="M18 ${y} Q55 ${y+20} 92 ${y} Q55 ${y+8} 18 ${y} Z" fill="${gold}" stroke="#12140D" stroke-width="1"/>`;
+    }
+    if(star){
+      const sy = ry - rockers*13 - 6;
+      inner += `<circle cx="55" cy="${sy}" r="11" fill="#12140D" stroke="${gold}" stroke-width="2"/>
+        <polygon points="${starPoints(55,sy,8,3.4)}" fill="${gold}"/>`;
+    }
+  } else if(t==='bar'){
+    const color = insignia.color==='silver' ? silver : gold;
+    const n = insignia.count||1;
+    for(let i=0;i<n;i++){
+      inner += `<rect x="${30+i*0}" y="${50+i*22}" width="50" height="16" fill="${color}" stroke="#12140D" stroke-width="1"/>`;
+    }
+  } else if(t==='leaf'){
+    const color = insignia.color==='silver' ? silver : gold;
+    inner = `<ellipse cx="40" cy="65" rx="16" ry="26" fill="${color}" stroke="#12140D" stroke-width="1" transform="rotate(-18 40 65)"/>
+      <ellipse cx="70" cy="65" rx="16" ry="26" fill="${color}" stroke="#12140D" stroke-width="1" transform="rotate(18 70 65)"/>
+      <circle cx="55" cy="60" r="5" fill="${color}"/>`;
+  } else if(t==='eagle'){
+    inner = `<circle cx="55" cy="65" r="30" fill="none" stroke="${silver}" stroke-width="3"/>
+      <path d="M30 65 L55 50 L80 65 L68 65 L68 85 L42 85 L42 65 Z" fill="${silver}"/>
+      <text x="55" y="105" text-anchor="middle" font-family="Space Mono" font-size="8" fill="${silver}">COL</text>`;
+  } else if(t==='stars'){
+    const n = insignia.count||1;
+    const spacing = 26;
+    const startX = 55 - ((n-1)*spacing)/2;
+    for(let i=0;i<n;i++){
+      inner += `<polygon points="${starPoints(startX+i*spacing, 65, 15, 6.5)}" fill="${silver}" stroke="#12140D" stroke-width="1"/>`;
+    }
+  } else {
+    inner = `<circle cx="55" cy="65" r="30" fill="none" stroke="${olive}" stroke-width="2" stroke-dasharray="3 3"/>`;
+  }
+  const frame = mustang ? `<rect x="4" y="4" width="102" height="122" fill="none" stroke="url(#mustangGrad)" stroke-width="4" rx="4"/>
+     <polygon points="${starPoints(94,18,9,4)}" fill="#C9A227" stroke="#12140D" stroke-width="1"/>` : '';
+  return `<svg viewBox="0 0 110 130" xmlns="http://www.w3.org/2000/svg" style="${locked?'filter:grayscale(1) opacity(.5);':''}">
+    <defs><linearGradient id="mustangGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F4E3A1"/><stop offset="50%" stop-color="#C9A227"/><stop offset="100%" stop-color="#8A7220"/>
+    </linearGradient></defs>
+    ${frame}${inner}
+  </svg>`;
+}
+
+/* ============ RANK LADDER ============ */
+const RANKS = [
+  {id:'CIV', code:'—', title:'Civilian', phase:1, insignia:{type:'patch'}},
+  {id:'DEP', code:'DEP', title:'Future Soldier (DEP)', phase:1, hp:3000, insignia:{type:'patch'}},
+  {id:'BCT', gate:true, title:'Basic Combat Training', phase:1},
+  {id:'PVT', code:'E-1', title:'Private', phase:1, insignia:{type:'blank'}, requiresCourse:'BCT'},
+  {id:'PV2', code:'E-2', title:'Private 2nd Class', phase:1, hp:10000, insignia:{type:'chevron', chevrons:1}},
+  {id:'PFC', code:'E-3', title:'Private First Class', phase:1, hp:20000, streak:7, insignia:{type:'chevron', chevrons:1, rockers:1}},
+  {id:'SPC', code:'E-4', title:'Specialist', phase:1, hp:35000, streak:10, insignia:{type:'shield'}, branch:true},
+
+  {id:'BLC', gate:true, title:'Basic Leader Course', phase:2, track:'NCO'},
+  {id:'CPL', code:'E-4', title:'Corporal', phase:2, track:'NCO', requiresCourse:'BLC', insignia:{type:'chevron', chevrons:2}},
+  {id:'SGT', code:'E-5', title:'Sergeant', phase:2, track:'NCO', hp:55000, streak:14, insignia:{type:'chevron', chevrons:3}},
+  {id:'SSG', code:'E-6', title:'Staff Sergeant', phase:2, track:'NCO', hp:80000, streak:21, insignia:{type:'chevron', chevrons:3, rockers:1}},
+  {id:'SLC', gate:true, title:'Senior Leader Course', phase:2, track:'NCO'},
+  {id:'SFC', code:'E-7', title:'Sergeant First Class', phase:2, track:'NCO', requiresCourse:'SLC', insignia:{type:'chevron', chevrons:3, rockers:2}},
+  {id:'MSG', code:'E-8', title:'Master Sergeant', phase:2, track:'NCO', hp:180000, streak:30, insignia:{type:'chevron', chevrons:3, rockers:3}},
+  {id:'SGM', code:'E-9', title:'Sergeant Major', phase:2, track:'NCO', hp:250000, streak:45, insignia:{type:'chevron', chevrons:3, rockers:3, star:true}},
+
+  {id:'OCS', gate:true, title:'Officer Candidate School', phase:2, track:'OFFICER'},
+  {id:'2LT', code:'O-1', title:'2nd Lieutenant', phase:2, track:'OFFICER', requiresCourse:'OCS', insignia:{type:'bar', color:'gold', count:1}},
+  {id:'1LT', code:'O-2', title:'1st Lieutenant', phase:2, track:'OFFICER', hp:330000, streak:50, insignia:{type:'bar', color:'silver', count:1}},
+  {id:'CPT', code:'O-3', title:'Captain', phase:2, track:'OFFICER', hp:420000, streak:60, insignia:{type:'bar', color:'silver', count:2}},
+
+  {id:'USAWC', gate:true, title:'U.S. Army War College', phase:3, track:'OFFICER'},
+  {id:'MAJ', code:'O-4', title:'Major', phase:3, track:'OFFICER', requiresCourse:'USAWC', insignia:{type:'leaf', color:'gold'}},
+  {id:'LTC', code:'O-5', title:'Lieutenant Colonel', phase:3, track:'OFFICER', hp:650000, streak:100, insignia:{type:'leaf', color:'silver'}},
+  {id:'COL', code:'O-6', title:'Colonel', phase:3, track:'OFFICER', hp:850000, streak:120, insignia:{type:'eagle'}},
+  {id:'BG', code:'O-7', title:'Brigadier General', phase:3, track:'OFFICER', hp:1000000, streak:135, insignia:{type:'stars', count:1}},
+  {id:'MG', code:'O-8', title:'Major General', phase:3, track:'OFFICER', hp:1500000, streak:150, insignia:{type:'stars', count:2}},
+  {id:'LTG', code:'O-9', title:'Lieutenant General', phase:3, track:'OFFICER', hp:2000000, streak:165, insignia:{type:'stars', count:3}},
+  {id:'GEN', code:'O-10', title:'General', phase:3, track:'OFFICER', hp:3000000, streak:180, insignia:{type:'stars', count:4}},
+];
+
+const COURSES = {
+  BCT: {name:'Basic Combat Training', desc:'5 consecutive days: 100% quota, first log before 08:00, water only.', days:5,
+    check:(recs,goal)=>checkStreakWindow(recs, goal, {days:5, firstBefore:'08:00', pureWater:true})},
+  BLC: {name:'Basic Leader Course', desc:'4 straight days logging ≥250 mL every 2 hrs, 08:00–20:00.', days:4,
+    check:(recs)=>checkFrequency(recs, {days:4, startHour:8, endHour:20, stepHours:2, minAmt:250})},
+  SLC: {name:'Senior Leader Course', desc:'500 mL within 30 min of first log time, 7 straight days.', days:7,
+    check:(recs)=>checkFirstLogMin(recs, {days:7, minAmt:500})},
+  OCS: {name:'Officer Candidate School', desc:'5 consecutive days: 100% quota, first log before 07:00, ≥4 logs/day, ≥2500 mL/day.', days:5,
+    check:(recs,goal)=>checkStreakWindow(recs, goal, {days:5, firstBefore:'07:00', minLogsPerDay:4, minDailyAmt:2500})},
+  USAWC: {name:'U.S. Army War College', desc:'90 continuous days at 100% of daily quota.', days:90,
+    check:(recs,goal)=>checkStreakWindow(recs, goal, {days:90})},
+};
+
+/* ============ STATE ============ */
+const SUPABASE_URL = 'https://ayjtyjpxovtnnonchvoa.supabase.co/rest/v1/';
+const SUPABASE_KEY = 'sb_publishable_olMvNpZfGboq48FbAye2qQ_TVTs8wBT';
+
+function supaHeaders(extra){
+  return Object.assign({
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_KEY,
+    'Content-Type': 'application/json'
+  }, extra||{});
+}
+function getClientId(){
+  let id = localStorage.getItem('tacticalHydrationClientId');
+  if(!id){
+    id = 'sv-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem('tacticalHydrationClientId', id);
+  }
+  return id;
+}
+function setCloudStatus(text){
+  const el = document.getElementById('cloudStatus');
+  if(el) el.textContent = text;
+}
+let syncTimer = null;
+function queueSync(){
+  clearTimeout(syncTimer);
+  setCloudStatus('syncing…');
+  syncTimer = setTimeout(pushToSupabase, 800);
+}
+async function pushToSupabase(){
+  try{
+    const res = await fetch(SUPABASE_URL + 'hydration_state?on_conflict=id', {
+      method:'POST',
+      headers: supaHeaders({'Prefer':'resolution=merge-duplicates,return=minimal'}),
+      body: JSON.stringify([{ id: getClientId(), state: state, updated_at: new Date().toISOString() }])
+    });
+    setCloudStatus(res.ok ? 'synced' : 'offline (local only)');
+  }catch(e){ console.warn('Supabase sync failed', e); setCloudStatus('offline (local only)'); }
+}
+async function pullFromSupabase(){
+  try{
+    const res = await fetch(SUPABASE_URL + 'hydration_state?id=eq.' + getClientId() + '&select=state', { headers: supaHeaders() });
+    if(!res.ok) return null;
+    const rows = await res.json();
+    if(rows && rows[0] && rows[0].state) return rows[0].state;
+  }catch(e){ console.warn('Supabase fetch failed', e); }
+  return null;
+}
+
+let state = loadState();
+function defaultState(){
+  return {
+    callsign:'', dailyGoal:2000, totalHp:0, logs:[], bestStreak:0,
+    track:null, mustang:false, coursesCleared:{}, svcNo: String(Math.floor(100000+Math.random()*899999))
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  }catch(e){ return defaultState(); }
+}
+function saveState(){ localStorage.setItem(KEY, JSON.stringify(state)); queueSync(); }
+
+/* ============ DATE / RECORD HELPERS ============ */
+function dayKey(d){ const dt = new Date(d); return dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0'); }
+function todayKey(){ return dayKey(new Date()); }
+
+function buildDailyRecords(){
+  const map = {};
+  for(const log of state.logs){
+    const k = dayKey(log.time);
+    if(!map[k]) map[k] = {date:k, total:0, entries:[], allWater:true};
+    map[k].total += log.amt;
+    map[k].entries.push(log);
+    if(log.type!=='water') map[k].allWater = false;
+  }
+  for(const k in map){
+    map[k].entries.sort((a,b)=> new Date(a.time)-new Date(b.time));
+    map[k].firstTime = map[k].entries[0].time;
+  }
+  return map;
+}
+
+function computeStreaks(recs, goal){
+  const keys = Object.keys(recs).sort();
+  let best = state.bestStreak||0, run=0, prevDate=null;
+  for(const k of keys){
+    const met = recs[k].total >= goal;
+    if(met){
+      if(prevDate){
+        const diff = (new Date(k) - new Date(prevDate))/86400000;
+        run = diff===1 ? run+1 : 1;
+      } else run = 1;
+      best = Math.max(best, run);
+      prevDate = k;
+    } else {
+      run = 0; prevDate = null;
+    }
+  }
+  // current streak = consecutive met days ending today or yesterday
+  let cur = 0;
+  let cursor = new Date();
+  while(true){
+    const k = dayKey(cursor);
+    const rec = recs[k];
+    if(rec && rec.total >= goal){ cur++; cursor.setDate(cursor.getDate()-1); }
+    else if(k===todayKey()){ cursor.setDate(cursor.getDate()-1); continue; } // today not yet met, check yesterday
+    else break;
+  }
+  return {current:cur, best};
+}
+
+function timeStr(t){ const d = new Date(t); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function minutesOfDay(t){ const d = new Date(t); return d.getHours()*60+d.getMinutes(); }
+function toMinutes(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60+m; }
+
+function lastNCompleteDays(recs, n){
+  // returns array of last n calendar day records ending yesterday (complete days), most recent last
+  const out = [];
+  let cursor = new Date(); cursor.setDate(cursor.getDate()-1);
+  for(let i=0;i<n;i++){
+    const k = dayKey(cursor);
+    out.unshift(recs[k]||{date:k,total:0,entries:[],allWater:true});
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return out;
+}
+
+function checkStreakWindow(recs, goal, opts){
+  const days = lastNCompleteDays(recs, opts.days);
+  // trailing consecutive passes ending yesterday
+  let streak = 0;
+  for(let i=days.length-1;i>=0;i--){
+    const d = days[i];
+    let pass = d.entries.length>0 && d.total >= (opts.minDailyAmt||goal);
+    if(pass && opts.firstBefore) pass = minutesOfDay(d.firstTime) <= toMinutes(opts.firstBefore);
+    if(pass && opts.pureWater) pass = d.allWater;
+    if(pass && opts.minLogsPerDay) pass = d.entries.length >= opts.minLogsPerDay;
+    if(pass) streak++; else break;
+  }
+  return {progress:streak, need:opts.days, complete: streak>=opts.days};
+}
+
+function checkFrequency(recs, opts){
+  const days = lastNCompleteDays(recs, opts.days);
+  let streak = 0;
+  for(let i=days.length-1;i>=0;i--){
+    const d = days[i];
+    let pass = true;
+    for(let h=opts.startHour; h<=opts.endHour; h+=opts.stepHours){
+      const winStart = h*60, winEnd = (h+opts.stepHours)*60;
+      const hit = d.entries.some(e=> minutesOfDay(e.time)>=winStart && minutesOfDay(e.time)<winEnd && e.amt>=opts.minAmt);
+      if(!hit){ pass=false; break; }
+    }
+    if(pass) streak++; else break;
+  }
+  return {progress:streak, need:opts.days, complete: streak>=opts.days};
+}
+
+function checkFirstLogMin(recs, opts){
+  const days = lastNCompleteDays(recs, opts.days);
+  let streak = 0;
+  for(let i=days.length-1;i>=0;i--){
+    const d = days[i];
+    const pass = d.entries.length>0 && d.entries[0].amt >= opts.minAmt;
+    if(pass) streak++; else break;
+  }
+  return {progress:streak, need:opts.days, complete: streak>=opts.days};
+}
+
+/* ============ RANK LOGIC ============ */
+function activePath(){
+  // ranks up through SPC, then branch by state.track
+  return RANKS.filter(r => r.phase===1 || !r.track || r.track===state.track);
+}
+
+function currentRankIndexForPath(path, recs, streaks){
+  let idx = 0;
+  for(let i=0;i<path.length;i++){
+    const r = path[i];
+    if(r.gate){
+      const c = COURSES[r.id];
+      const result = c.check(recs, state.dailyGoal);
+      if(result.complete){ state.coursesCleared[r.id]=true; idx=i; continue; }
+      else break;
+    }
+    if(r.branch && !state.track) { idx=i; break; }
+    const hpOk = !r.hp || state.totalHp >= r.hp;
+    const streakOk = !r.streak || streaks.best >= r.streak || streaks.current >= r.streak;
+    const courseOk = !r.requiresCourse || state.coursesCleared[r.requiresCourse];
+    if(hpOk && streakOk && courseOk) idx = i;
+    else break;
+  }
+  return idx;
+}
+function currentRankIndex(recs, streaks){
+  return currentRankIndexForPath(activePath(), recs, streaks);
+}
+function pathForTrack(track){
+  return RANKS.filter(r => r.phase===1 || !r.track || r.track===track);
+}
+
+/* ============ RENDER ============ */
+function render(){
+  document.getElementById('callsign').value = state.callsign;
+  document.getElementById('dailyGoal').value = state.dailyGoal;
+  document.getElementById('svcNo').textContent = state.svcNo;
+
+  const recs = buildDailyRecords();
+  const streaks = computeStreaks(recs, state.dailyGoal);
+  state.bestStreak = streaks.best;
+
+  const path = activePath();
+  const idx = currentRankIndex(recs, streaks);
+  const curRank = path[idx];
+
+  document.getElementById('badgeSvg').innerHTML = curRank.insignia ? badgeSVG(curRank.insignia, {mustang: state.mustang && curRank.track==='OFFICER'}) : badgeSVG({type:'patch'});
+  document.getElementById('rankCode').textContent = curRank.code || '—';
+  document.getElementById('rankTitle').textContent = curRank.gate ? 'In Training: '+curRank.title : curRank.title;
+  document.getElementById('mustangTag').style.display = (state.mustang && curRank.track==='OFFICER') ? 'inline-block' : 'none';
+
+  const today = recs[todayKey()] || {total:0, entries:[]};
+  const pct = Math.min(100, Math.round(100*today.total/state.dailyGoal));
+  document.getElementById('todayFill').style.width = pct+'%';
+  document.getElementById('todayLabel').textContent = `${today.total} / ${state.dailyGoal} mL today`;
+
+  document.getElementById('totalHp').textContent = state.totalHp.toLocaleString();
+  document.getElementById('curStreak').textContent = streaks.current;
+  document.getElementById('bestStreak').textContent = streaks.best;
+  document.getElementById('daysServed').textContent = Object.keys(recs).length;
+
+  // today's log entries
+  const logDiv = document.getElementById('todayLog');
+  logDiv.innerHTML = today.entries.length ? today.entries.map(e=>
+    `<div class="entry"><span>${timeStr(e.time)} — ${e.type==='water'?'Water':'Other'}</span><span>${e.amt} mL</span></div>`
+  ).join('') : '<div style="opacity:.5;">No entries logged today.</div>';
+
+  // branch section
+  const branchSection = document.getElementById('branchSection');
+  const spcIdx = RANKS.findIndex(r=>r.id==='SPC');
+  const spcReached = state.totalHp >= RANKS[spcIdx].hp && (streaks.best>=RANKS[spcIdx].streak || streaks.current>=RANKS[spcIdx].streak);
+  branchSection.style.display = (spcReached) ? 'block' : 'none';
+  document.getElementById('pickNco').classList.toggle('selected', state.track==='NCO');
+  document.getElementById('pickOcs').classList.toggle('selected', state.track==='OFFICER');
+
+  // course section — show active gate(s) relevant to current position
+  const courseArea = document.getElementById('courseArea');
+  const courseSection = document.getElementById('courseSection');
+  let gatesToShow = [];
+  path.forEach((r,i)=>{
+    if(r.gate && !state.coursesCleared[r.id] && i<=idx+1) gatesToShow.push(r);
+  });
+  if(!state.track){
+    gatesToShow = path.filter(r=>r.gate && !state.coursesCleared[r.id] && r.phase===1);
+  }
+  courseSection.style.display = gatesToShow.length ? 'block' : 'none';
+  courseArea.innerHTML = gatesToShow.map(r=>{
+    const c = COURSES[r.id];
+    const result = c.check(recs, state.dailyGoal);
+    const cleared = result.complete;
+    const pct2 = Math.min(100, Math.round(100*result.progress/result.need));
+    return `<div class="gate-card ${cleared?'cleared':''}">
+      <div class="gate-stamp">${cleared?'CLEARED':'GATE'}</div>
+      <div class="gate-title stencil">${c.name}</div>
+      <div class="gate-desc">${c.desc}</div>
+      <div class="req-list"><div class="req">
+        <div class="req-label"><span>Progress</span><span>${result.progress} / ${result.need} days</span></div>
+        <div class="req-bar"><div class="req-fill" style="width:${pct2}%"></div></div>
+      </div></div>
+    </div>`;
+  }).join('') || '';
+
+  // duty roster
+  document.getElementById('roster').innerHTML = path.map((r,i)=> rankRowHTML(r, i, idx, path, recs, {alt:false})).join('');
+
+  renderAllRanksPage(recs, streaks);
+  saveState();
+}
+
+function rankRowHTML(r, i, idx, path, recs, opts){
+  opts = opts||{};
+  const altClass = opts.alt ? ' alt' : '';
+  let status = i<idx ? 'achieved' : (i===idx ? 'current' : 'locked');
+  if(r.gate){
+    const cleared = state.coursesCleared[r.id];
+    status = cleared ? 'achieved' : (i===idx || i===idx+1 ? 'current' : 'locked');
+    if(opts.alt) status = cleared ? 'achieved' : 'locked';
+    const c = COURSES[r.id];
+    const result = c.check(recs, state.dailyGoal);
+    return `<div class="rank-row ${status}${altClass}">
+      <div class="mini-badge" style="display:flex;align-items:center;justify-content:center;"><span style="font-family:'Big Shoulders Stencil'; font-size:22px; color:${cleared?'var(--olive)':'var(--red-bright)'};">⚑</span></div>
+      <div><div class="rr-title stencil">${r.title}</div><div class="rr-code">MANDATORY GATE COURSE</div><div class="rr-req">${result.progress}/${result.need} days complete</div></div>
+      <div class="rr-status ${status}">${cleared?'Cleared':status==='locked'?'Locked':'In Progress'}</div>
+    </div>`;
+  }
+  if(r.branch && !state.track){
+    return `<div class="rank-row locked${altClass}"><div class="mini-badge"></div><div><div class="rr-title stencil">${r.title} — choose a path above</div><div class="rr-code">${r.code}</div></div><div class="rr-status locked">Pending</div></div>`;
+  }
+  const reqParts = [];
+  if(r.hp) reqParts.push(r.hp.toLocaleString()+' HP');
+  if(r.streak) reqParts.push(r.streak+'-day streak');
+  if(r.requiresCourse) reqParts.push('after '+r.requiresCourse);
+  return `<div class="rank-row ${status}${altClass}">
+    <div class="mini-badge">${badgeSVG(r.insignia, {locked: status==='locked', mustang: state.mustang && r.track==='OFFICER' && status!=='locked'})}</div>
+    <div><div class="rr-title stencil">${r.title}</div><div class="rr-code">${r.code}</div><div class="rr-req">${reqParts.join(' · ')||'Starting rank'}</div></div>
+    <div class="rr-status ${status}">${status==='achieved'?'Achieved':status==='current'?'Current':'Locked'}</div>
+  </div>`;
+}
+
+function renderAllRanksPage(recs, streaks){
+  document.getElementById('trackStatusLabel').textContent = state.track ? (state.track==='NCO' ? 'NCO Leadership' : 'Officer Commission') + (state.mustang ? ' · Mustang' : '') : 'Not yet chosen';
+
+  const phase1Path = RANKS.filter(r=>r.phase===1);
+  const phase1Idx = currentRankIndexForPath(activePath(), recs, streaks);
+  const phase1EndIdx = Math.min(phase1Idx, phase1Path.length-1);
+  document.getElementById('careerPhase1').innerHTML = phase1Path.map((r,i)=> rankRowHTML(r, i, state.track ? phase1Path.length : phase1EndIdx, phase1Path, recs)).join('');
+
+  const ncoPath = pathForTrack('NCO').filter(r=>r.phase>1);
+  const officerPath = pathForTrack('OFFICER').filter(r=>r.phase>1);
+  const fullNco = pathForTrack('NCO');
+  const fullOfficer = pathForTrack('OFFICER');
+  const ncoOffset = fullNco.length - ncoPath.length;
+  const officerOffset = fullOfficer.length - officerPath.length;
+
+  const ncoIsActive = state.track==='NCO';
+  const officerIsActive = state.track==='OFFICER';
+  document.getElementById('ncoPill').textContent = ncoIsActive ? 'Active' : 'Alternate';
+  document.getElementById('ncoPill').classList.toggle('on', ncoIsActive);
+  document.getElementById('officerPill').textContent = officerIsActive ? 'Active' : 'Alternate';
+  document.getElementById('officerPill').classList.toggle('on', officerIsActive);
+
+  const ncoIdx = ncoIsActive ? currentRankIndexForPath(fullNco, recs, streaks) - ncoOffset : -1;
+  const officerIdx = officerIsActive ? currentRankIndexForPath(fullOfficer, recs, streaks) - officerOffset : -1;
+
+  document.getElementById('careerNco').innerHTML = ncoPath.map((r,i)=> rankRowHTML(r, i, ncoIdx, ncoPath, recs, {alt: !ncoIsActive})).join('');
+  document.getElementById('careerOfficer').innerHTML = officerPath.map((r,i)=> rankRowHTML(r, i, officerIdx, officerPath, recs, {alt: !officerIsActive})).join('');
+}
+
+/* ============ EVENTS ============ */
+let logType = 'water';
+document.querySelectorAll('.canteen-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    addLog(Number(btn.dataset.amt), logType);
+  });
+});
+document.getElementById('typeWater').addEventListener('click', ()=>setType('water'));
+document.getElementById('typeOther').addEventListener('click', ()=>setType('other'));
+function setType(t){
+  logType = t;
+  document.getElementById('typeWater').classList.toggle('active', t==='water');
+  document.getElementById('typeOther').classList.toggle('active', t==='other');
+}
+document.getElementById('logCustomBtn').addEventListener('click', ()=>{
+  const val = Number(document.getElementById('customAmt').value);
+  if(val>0){ addLog(val, logType); document.getElementById('customAmt').value=''; }
+});
+document.getElementById('undoBtn').addEventListener('click', ()=>{
+  if(!state.logs.length) return;
+  const last = state.logs.pop();
+  state.totalHp -= last.amt;
+  render();
+});
+function addLog(amt, type){
+  state.logs.push({time: new Date().toISOString(), amt, type});
+  state.totalHp += amt;
+  render();
+}
+document.getElementById('callsign').addEventListener('input', e=>{ state.callsign = e.target.value; saveState(); });
+document.getElementById('dailyGoal').addEventListener('change', e=>{ state.dailyGoal = Math.max(500, Number(e.target.value)||2000); render(); });
+document.getElementById('pickNco').addEventListener('click', ()=>{ if(!state.track){ state.track='NCO'; render(); } });
+document.getElementById('pickOcs').addEventListener('click', ()=>{
+  if(state.track!=='OFFICER'){
+    // if switching from an NCO rank beyond SPC, mark mustang
+    const recs = buildDailyRecords();
+    const streaks = computeStreaks(recs, state.dailyGoal);
+    if(state.track==='NCO'){
+      const path = activePath();
+      const idx = currentRankIndex(recs, streaks);
+      if(path[idx] && path[idx].code && path[idx].code!=='E-4') state.mustang = true;
+    }
+    state.track='OFFICER';
+    render();
+  }
+});
+
+document.getElementById('navRecord').addEventListener('click', ()=> switchPage('pageRecord', 'navRecord'));
+document.getElementById('navAllRanks').addEventListener('click', ()=> switchPage('pageAllRanks', 'navAllRanks'));
+function switchPage(pageId, navId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active', p.id===pageId));
+  document.querySelectorAll('.topnav button').forEach(b=>b.classList.toggle('active', b.id===navId));
+}
+
+render();
+
+(async function initCloudSync(){
+  setCloudStatus('checking…');
+  const remote = await pullFromSupabase();
+  if(remote){
+    state = Object.assign(defaultState(), remote);
+    saveStateLocalOnly();
+    render();
+    setCloudStatus('synced');
+  } else {
+    queueSync();
+  }
+})();
+function saveStateLocalOnly(){ localStorage.setItem(KEY, JSON.stringify(state)); }
+</script>
+</body>
+</html>
