@@ -479,16 +479,16 @@ const RANKS = [
 ];
 
 const COURSES = {
-  BCT: {name:'Basic Combat Training', desc:'5 consecutive days: 100% quota, first log before 08:00, water only.', days:5,
-    check:(recs,goal)=>checkStreakWindow(recs, goal, {days:5, firstBefore:'08:00', pureWater:true})},
-  BLC: {name:'Basic Leader Course', desc:'4 straight days logging ≥250 mL every 2 hrs, 08:00–20:00.', days:4,
-    check:(recs)=>checkFrequency(recs, {days:4, startHour:8, endHour:20, stepHours:2, minAmt:250})},
-  SLC: {name:'Senior Leader Course', desc:'500 mL within 30 min of first log time, 7 straight days.', days:7,
-    check:(recs)=>checkFirstLogMin(recs, {days:7, minAmt:500})},
-  OCS: {name:'Officer Candidate School', desc:'5 consecutive days: 100% quota, first log before 07:00, ≥4 logs/day, ≥2500 mL/day.', days:5,
-    check:(recs,goal)=>checkStreakWindow(recs, goal, {days:5, firstBefore:'07:00', minLogsPerDay:4, minDailyAmt:2500})},
-  USAWC: {name:'U.S. Army War College', desc:'90 continuous days at 100% of daily quota.', days:90,
-    check:(recs,goal)=>checkStreakWindow(recs, goal, {days:90})},
+  BCT: {name:'Basic Combat Training', dailyAmt:1500, desc:'5 consecutive days: ≥1,500 mL/day, first log before 08:00, water only.', days:5,
+    check:(recs)=>checkStreakWindow(recs, null, {days:5, firstBefore:'08:00', pureWater:true, minDailyAmt:1500})},
+  BLC: {name:'Basic Leader Course', dailyAmt:1900, desc:'4 straight days: ≥1,900 mL/day, logged ≥250 mL every 2 hrs, 08:00–20:00.', days:4,
+    check:(recs)=>checkFrequency(recs, {days:4, startHour:8, endHour:20, stepHours:2, minAmt:250, minDailyTotal:1900})},
+  SLC: {name:'Senior Leader Course', dailyAmt:2500, desc:'7 straight days: ≥2,500 mL/day, first 500 mL within 30 min of waking.', days:7,
+    check:(recs)=>checkFirstLogMin(recs, {days:7, minAmt:500, minDailyTotal:2500})},
+  OCS: {name:'Officer Candidate School', dailyAmt:2500, desc:'5 consecutive days: ≥2,500 mL/day, first log before 07:00, ≥4 logs/day.', days:5,
+    check:(recs)=>checkStreakWindow(recs, null, {days:5, firstBefore:'07:00', minLogsPerDay:4, minDailyAmt:2500})},
+  USAWC: {name:'U.S. Army War College', dailyAmt:2600, desc:'90 continuous days at ≥2,600 mL/day.', days:90,
+    check:(recs)=>checkStreakWindow(recs, null, {days:90, minDailyAmt:2600})},
 };
 
 /* ============ STATE ============ */
@@ -649,6 +649,7 @@ function checkFrequency(recs, opts){
       const hit = d.entries.some(e=> minutesOfDay(e.time)>=winStart && minutesOfDay(e.time)<winEnd && e.amt>=opts.minAmt);
       if(!hit){ pass=false; break; }
     }
+    if(pass && opts.minDailyTotal) pass = d.total >= opts.minDailyTotal;
     if(pass) streak++; else break;
   }
   return {progress:streak, need:opts.days, complete: streak>=opts.days};
@@ -659,7 +660,8 @@ function checkFirstLogMin(recs, opts){
   let streak = 0;
   for(let i=days.length-1;i>=0;i--){
     const d = days[i];
-    const pass = d.entries.length>0 && d.entries[0].amt >= opts.minAmt;
+    let pass = d.entries.length>0 && d.entries[0].amt >= opts.minAmt;
+    if(pass && opts.minDailyTotal) pass = d.total >= opts.minDailyTotal;
     if(pass) streak++; else break;
   }
   return {progress:streak, need:opts.days, complete: streak>=opts.days};
@@ -786,7 +788,7 @@ function rankRowHTML(r, i, idx, path, recs, opts){
     const result = c.check(recs, state.dailyGoal);
     return `<div class="rank-row ${status}${altClass}">
       <div class="mini-badge" style="display:flex;align-items:center;justify-content:center;"><span style="font-family:'Big Shoulders Stencil'; font-size:22px; color:${cleared?'var(--olive)':'var(--red-bright)'};">⚑</span></div>
-      <div><div class="rr-title stencil">${r.title}</div><div class="rr-code">MANDATORY GATE COURSE</div><div class="rr-req">${result.progress}/${result.need} days complete</div></div>
+      <div><div class="rr-title stencil">${r.title}</div><div class="rr-code">MANDATORY GATE COURSE</div><div class="rr-req">${result.progress}/${result.need} days · ≥${(COURSES[r.id].dailyAmt||0).toLocaleString()} mL/day</div></div>
       <div class="rr-status ${status}">${cleared?'Cleared':status==='locked'?'Locked':'In Progress'}</div>
     </div>`;
   }
